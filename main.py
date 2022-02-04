@@ -70,7 +70,12 @@ async def on_message(message):
         # * Command Parsing
         if message.content.startswith('!pirate') and message.channel.id == game_server.COMMAND_CHANNEL_ID:
             parts = message.content.split(' ')
-            if parts[1].upper() == 'START':
+            if parts[1].upper() == 'HELP':
+                # Help command --> send a help message
+                message.channel.send(Constants.HELP_MESSAGE)
+
+            elif parts[1].upper() == 'START':
+                # Start command --> Tell the server to start the game
                 game_server.start_game()
         else:
             # Ignore this as not a command
