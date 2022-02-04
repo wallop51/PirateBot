@@ -1,7 +1,7 @@
 import discord
 from discord.ext import tasks
 import os, time
-from pirategame import Server
+from pirategame import Server, GameBoard
 from constants import Constants
 from json import dumps, loads
 
@@ -101,6 +101,10 @@ async def on_message(message):
             elif parts[1].upper() == 'START':
                 # Start command --> Tell the server to start the game
                 game_server.start_game()
+
+            elif parts[1].upper() == 'TEST':
+                #! Dev purposes only
+                await message.channel.send( GameBoard().__str__() ) 
         else:
             # Ignore this as not a command
             pass
