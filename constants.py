@@ -1,3 +1,42 @@
 class Constants:
     HELP_MESSAGE: str = """This is the help message that is displayed when a user types !pirate help.
 To start a game, join a vc and then type !pirate start"""
+    ITEM_PROPORTIONS: dict = {
+        'Rob':1,
+        'Kill':1,
+        'Present':1,
+        'Scull':1,
+        'Swap':1,
+        'Choose':1,
+        'Shield':1,
+        'Mirror':1,
+        'Bomb':1,
+        'Double':1,
+        'Bank':1,
+        '5K':1,
+        '3K':2,
+        '1K':10,
+        '200':25,
+    }
+    TRANSLATION_TABLE: dict = {
+        0:'white_large_square',
+        1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
+        6:'six', 7:'seven',
+        'A':'regional_indicator_a', 'B':'regional_indicator_b', 'C':'regional_indicator_c', 'D':'regional_indicator_d',
+        'E':'regional_indicator_e', 'F':'regional_indicator_f', 'G':'regional_indicator_g',
+        'Rob':'gem',
+        'Kill':'dagger',
+        'Present':'gift',
+        'Scull':'skull_crossbones',
+        'Swap':'arrows_counterclockwise',
+        'Choose':'regional_indicator_c',
+        'Shield':'shield',
+        'Mirror':'mirror',
+        'Bomb':'bomb',
+        'Double':'two',
+        'Bank':'moneybag',
+        '5K':'yen',
+        '3K':'pound',
+        '1K':'euro',
+        '200':'dollar',
+    }

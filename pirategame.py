@@ -62,13 +62,6 @@ class Server:
             return []
         
 class GameBoard:
-    TRANSLATION_TABLE: dict = {
-        0:'white_large_square',
-        1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
-        6:'six', 7:'seven',
-        'A':'regional_indicator_a', 'B':'regional_indicator_b', 'C':'regional_indicator_c', 'D':'regional_indicator_d',
-        'E':'regional_indicator_e', 'F':'regional_indicator_f', 'G':'regional_indicator_g', 
-    }
     def __init__(self):
         self.content: list = [[0, 'A', 'B', 'C', 'D', 'E', 'F', 'G']]
         self.content.extend( [ [i+1, 0,0,0,0,0,0,0] for i in range(7) ])
