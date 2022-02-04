@@ -13,7 +13,7 @@ def log(message: str, log_max: int = 5, print_to_console=True) -> None:
 
     log_list.append(message)
     if print_to_console:
-        log(message)
+        print(message)
     
     if log_count < log_max-1:
         log_count += 1
