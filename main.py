@@ -96,7 +96,7 @@ async def on_message(message):
             parts = message.content.split(' ')
             if parts[1].upper() == 'HELP':
                 # Help command --> send a help message
-                message.channel.send(Constants.HELP_MESSAGE)
+                await message.channel.send(Constants.HELP_MESSAGE)
 
             elif parts[1].upper() == 'START':
                 # Start command --> Tell the server to start the game
