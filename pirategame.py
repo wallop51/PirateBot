@@ -1,3 +1,7 @@
+from constants import Constants
+from general import List2D
+from random import shuffle
+
 class Server:
     def __init__(self, voice: int, command: int):
         # Create constants for channel IDs
@@ -62,15 +66,30 @@ class Server:
             return []
         
 class GameBoard:
-    def __init__(self):
+    
+    def __init__(self, grid_values='RANDOM'):
+        if grid_values.upper() == 'RANDOM':
+            squares = list()
+            for k, v in Constants.ITEM_PROPORTIONS.items():
+                for i in range(v):
+                    squares.append(k)
+            shuffle(squares)
+            self.grid = List2D(7, 7, values=tuple(squares))
+
         self.content: list = [[0, 'A', 'B', 'C', 'D', 'E', 'F', 'G']]
         self.content.extend( [ [i+1, 0,0,0,0,0,0,0] for i in range(7) ])
 
+    def update_content(self):
+        for y, row in enumerate(self.grid):
+            for x, item in enumerate(row):
+                self.content[y+1][x+1] = item
+
     def __str__(self) -> str:
+        self.update_content()
         output = ''
         for row in self.content:
             for item in row:
-                output += ':{}:'.format(self.TRANSLATION_TABLE[item])
+                output += ':{}:'.format(Constants.TRANSLATION_TABLE[item])
             output += '\n'
         return output
     def __repr__(self) -> str:
