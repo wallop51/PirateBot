@@ -76,7 +76,7 @@ class GameBoard:
             shuffle(squares)
             self.grid = List2D(7, 7, values=tuple(squares))
 
-        self.content: list = [[0, 'A', 'B', 'C', 'D', 'E', 'F', 'G']]
+        self.content: list = [[10, 'A', 'B', 'C', 'D', 'E', 'F', 'G']]
         self.content.extend( [ [i+1, 0,0,0,0,0,0,0] for i in range(7) ])
 
     def update_content(self):
