@@ -20,6 +20,7 @@ To start a game, join a vc and then type !pirate start"""
     }
     TRANSLATION_TABLE: dict = {
         0:'white_large_square',
+        10:'black_large_square',
         1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
         6:'six', 7:'seven',
         'A':'regional_indicator_a', 'B':'regional_indicator_b', 'C':'regional_indicator_c', 'D':'regional_indicator_d',
