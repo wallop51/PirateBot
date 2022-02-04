@@ -5,6 +5,30 @@ from pirategame import Server
 from constants import Constants
 from json import dumps, loads
 
+global log_count, log_list
+log_count, log_list = 0, []
+
+def log(message: str, log_max: int = 5, print_to_console=True) -> None:
+    global log_count, log_list
+
+    log_list.append(message)
+    if print_to_console:
+        log(message)
+    
+    if log_count < log_max-1:
+        log_count += 1
+    else:
+        log_count = 0
+        with open('log.json', 'a') as file:
+            file.append(dumps(
+                {
+                    'timestamp':time.time(),
+                    'logs':log_list,
+                },
+                indent=4,))
+        log_list = []
+    return None
+
 # Start the discord client
 client = discord.Client()
 
@@ -12,7 +36,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
     # print response
-    print('Logged in as {0.user}'.format(client))
+    log('Logged in as {0.user}'.format(client))
 
     # start discord.ext.tasks loop
     update_server.start()
@@ -43,7 +67,7 @@ async def update_server():
             if response['subject'] == 'all':
                 for member in game_server.members:
                     # Print a message log
-                    print(f'sending {member.id} {response["content"]}')
+                    log(f'sending {member.id} {response["content"]}')
                     await member.send(response['content'])
             else:
                 # send a message to a specific person
