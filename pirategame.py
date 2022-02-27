@@ -3,23 +3,29 @@ from general import List2D
 from random import shuffle
 import discord
 
+class Member:
+    def __init__(self, discord_member: discord.Member):
+        self.discord_member = discord_member
+        self.name = discord_member.display_name
+        self.id = discord_member.id
+        self.user = discord_member.user
+    def send(self, response):
+        if response["type"] == "message":
+            await self.discord_member.send(response['content'])
+        elif response['type'] == 'embed':
+            await self.discord_member.send(embed=response['embed'])
+
 class Server:
-    class Member:
-        def __init__(self, discord_member: discord.Member):
-            self.discord_member = discord_member
-            self.name = discord_member.display_name
-            self.id = discord_member.id
-
-            self.board = GameBoard()
-
 
     vcmembers: list
     members: dict
     
-    def __init__(self, voice: int, command: int):
+    def __init__(self, voice: int, command: int, members_list):
         # Create constants for channel IDs
         self.VOICE_CHANNEL_ID: int = voice
         self.COMMAND_CHANNEL_ID: int = command
+
+        self.vcmembers = members_list
 
         # Create game control properties
         self.started: bool = False
@@ -35,12 +41,15 @@ class Server:
 
         return outbound_message
 
-    def start_game(self):
-        if self.started:
-            return
-        self.members = {k.id : self.Member(k) for k in self.vcmembers}
+    def start_game(self, vcmembers=[]):
+        # only run once
+        if self.started: return
         self.started: bool = True
-        self.broadcasts.append('GAME STARTING')
+
+        self.vcmembers = vcmembers
+        self.members = {k.id : Member(k) for k in self.vcmembers}
+
+        print("game starting")
 
     
     def direct_message(self, subject, content):
@@ -62,23 +71,23 @@ class Server:
                     'content':message[1],
                 }
             )
-            #TODO discord client side
-
-        copy = self.broadcasts.copy()
-        for broadcast_message in copy:
+            
+        copy = self.embed_messages.copy()
+        for message in copy:
             outbound.append(
                 {
-                    'type':'message',
-                    'subject':'all',
-                    'content':broadcast_message,
+                    'type':'embed',
+                    'subject':message[0],
+                    'embed':message[1],
                 }
             )
-            self.broadcasts.remove(broadcast_message)  
+
         if outbound:
             return outbound
         else:
             return []
-        
+
+
 class GameBoard:
     def __init__(self, grid_values='RANDOM'):
         if grid_values.upper() == 'RANDOM':
