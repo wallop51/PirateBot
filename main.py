@@ -25,7 +25,7 @@ def log(message: str, log_max: int = 5, print_to_console=True) -> None:
                     'timestamp':time.time(),
                     'logs':log_list,
                 },
-                indent=4,))
+                indent=4))
         log_list = []
     return None
 
@@ -49,7 +49,7 @@ async def update_server():
     #* Send data to the server for it to parse in .update()
     
     # Get the members currently in the voice chat and send to the server
-    game_server.members = client.get_channel(game_server.VOICE_CHANNEL_ID).members
+    game_server.vcmembers = client.get_channel(game_server.VOICE_CHANNEL_ID).members
     #TODO check for people leaving/joining the vc
     
     #* call the update method on the server and parse all responses
@@ -65,7 +65,7 @@ async def update_server():
 
         if response['type'] == 'message':
             if response['subject'] == 'all':
-                for member in game_server.members:
+                for member in game_server.vcmembers:
                     # Print a message log
                     log(f'sending {member.id} {response["content"]}')
                     await member.send(response['content'])
@@ -99,6 +99,8 @@ async def on_message(message):
                 await message.channel.send(Constants.HELP_MESSAGE)
 
             elif parts[1].upper() == 'START':
+                # create member list
+                game_server.vcmembers = client.get_channel(game_server.VOICE_CHANNEL_ID).members
                 # Start command --> Tell the server to start the game
                 game_server.start_game()
 
