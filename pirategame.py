@@ -1,8 +1,21 @@
 from constants import Constants
 from general import List2D
 from random import shuffle
+import discord
 
 class Server:
+    class Member:
+        def __init__(self, discord_member: discord.Member):
+            self.discord_member = discord_member
+            self.name = discord_member.display_name
+            self.id = discord_member.id
+
+            self.board = GameBoard()
+
+
+    vcmembers: list
+    members: dict
+    
     def __init__(self, voice: int, command: int):
         # Create constants for channel IDs
         self.VOICE_CHANNEL_ID: int = voice
@@ -25,6 +38,7 @@ class Server:
     def start_game(self):
         if self.started:
             return
+        self.members = {k.id : self.Member(k) for k in self.vcmembers}
         self.started: bool = True
         self.broadcasts.append('GAME STARTING')
 
@@ -66,7 +80,6 @@ class Server:
             return []
         
 class GameBoard:
-    
     def __init__(self, grid_values='RANDOM'):
         if grid_values.upper() == 'RANDOM':
             squares = list()
