@@ -66,10 +66,10 @@ class BaseClass:
         @self.client.event
         async def on_ready():
             self.logger.info('Logged in as {0.user}'.format(self.client))
-            print('Logged in as {0.user}'.format(self.client))
 
         @self.client.event
         async def on_message(message):
+            print(message)
             self.message_recieved(message)
 
     def message_recieved(self, message):
@@ -77,6 +77,10 @@ class BaseClass:
 
         if author == self.client.user:
             return # Exit as the client is recieving its own message
+
+        self.logger.debug('{} sent the message: "{}{}'.format(
+            author.name, message.content[:50], ('"' if len(message.content) <= 50 else "..."), 
+        ))
 
         channel = message.channel
         if type(channel) == discord.channel.TextChannel:
@@ -95,6 +99,7 @@ class BaseClass:
         
     
     def start_client(self):
+        self.setup()
         self.client.run(self.environment.TOKEN)
 
     async def send_direct_message(self, member: MemberManager.Member, message: Message, response_wanted: bool = False):
