@@ -45,7 +45,7 @@ class EmbedMessage(Message):
 
 
 class BaseClass:
-    def __init__(self, debug=True):
+    def __init__(self, debug=False):
         logging_config_file = ('logging.conf' if not debug else 'logging_debug.conf')
         logging.config.fileConfig(
             fname=logging_config_file,
@@ -56,7 +56,7 @@ class BaseClass:
         self.logger.info('Logger has been initialised.')
 
         # setup environment variables
-        self.environment = EnvironmentContainer()
+        self.environment = EnvironmentContainer(required=("TOKEN",))
         self.logger.info('Environment variables have been initialised.')
 
         self.client = discord.Client()
