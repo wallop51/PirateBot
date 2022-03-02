@@ -5,9 +5,9 @@ name: PirateBot
 
 on:
   push:
-    branches: [ main ]
+    branches: [ Class-based ]
   pull_request:
-    branches: [ main ]
+    branches: [ Class-based ]
 
 jobs:
   build:
