@@ -3,8 +3,7 @@ import logging
 import logging.config
 import discord
 
-
-from utils import EnvironmentContainer
+from utils import EnvironmentContainer, LangContatiner
 
 class MemberManager:
     members = {}
@@ -55,17 +54,25 @@ class BaseClass:
 
         self.logger.info('Logger has been initialised.')
 
+
+        # read language files
+        self.lang = LangContatiner()
+        self.locale = self.lang.locale
+        self.logger.info(self.lang.logger.info.lang.init)
+
         # setup environment variables
         self.environment = EnvironmentContainer(required=("TOKEN",))
-        self.logger.info('Environment variables have been initialised.')
+        self.logger.info(self.lang.logger.info.env.init)
+
+        self.COMMAND_PREFIX = self.lang.discord.command.prefix
 
         self.client = discord.Client()
-        self.logger.info('Discord client has been created.')
+        self.logger.info(self.lang.logger.info.discord.init)
 
     def setup(self):
         @self.client.event
         async def on_ready():
-            self.logger.info('Logged in as {0.user}'.format(self.client))
+            self.logger.info(self.lang.logger.info.discord.client.init.format(client=self.client))
 
         @self.client.event
         async def on_message(message):
@@ -84,6 +91,8 @@ class BaseClass:
 
         channel = message.channel
         if type(channel) == discord.channel.TextChannel:
+            if message.content.startswith(self.COMMAND_PREFIX):
+                self.recieved_command(message)
             self.recieved_group_channel(message)
         elif type(channel) == discord.channel.DMChannel:
             self.recieved_direct_message(message)
@@ -93,7 +102,10 @@ class BaseClass:
     @abstractmethod # Needs to be inplemented in next class up
     def recieved_group_channel(self, message):
         return
-    @abstractmethod
+    @abstractmethod # Needs to be inplemented in next class up
+    def recieved_command(self, message):
+        return
+    @abstractmethod # Needs to be inplemented in next class up
     def recieved_direct_message(self, message):
         return
         
