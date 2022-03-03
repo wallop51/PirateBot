@@ -1,0 +1,6 @@
+logger.info.lang.init=Language container has need initialised.
+logger.info.env.init=Environment variables have been initialised.
+logger.info.discord.init=Discord client has been created.
+logger.info.discord.client.init=Logged in as {client.user}.
+
+discord.command.prefix=!pirate
