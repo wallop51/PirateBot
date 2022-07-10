@@ -50,27 +50,29 @@ class BaseClass:
         global LOGGER
         LOGGER = logging.getLogger(__name__)
 
-        self.logger.info('Logger has been initialised.')
+        LOGGER.info(f'{__name__} logger has been initialised.')
 
 
         # read language files
-        self.lang = LangContatiner()
-        self.locale = self.lang.locale
-        self.logger.info(self.lang.logger.info.lang.init)
+        global LANG
+        LANG = LangContatiner()
+        self.LANG = LANG
+        self.locale = LANG.locale
+        LOGGER.info(LANG.logger.info.lang.init)
 
         # setup environment variables
         self.environment = EnvironmentContainer(required=("TOKEN",))
-        self.logger.info(self.lang.logger.info.env.init)
+        LOGGER.info(LANG.logger.info.env.init)
 
-        self.COMMAND_PREFIX = self.lang.discord.command.prefix
+        self.COMMAND_PREFIX = LANG.discord.command.prefix
 
         self.client = discord.Client()
-        self.logger.info(self.lang.logger.info.discord.init)
+        LOGGER.info(LANG.logger.info.discord.init)
 
     def setup(self):
         @self.client.event
         async def on_ready():
-            self.logger.info(self.lang.logger.info.discord.client.init.format(client=self.client))
+            LOGGER.info(LANG.logger.info.discord.client.init.format(client=self.client))
 
         @self.client.event
         async def on_message(message):
@@ -82,7 +84,7 @@ class BaseClass:
         if author == self.client.user:
             return # Exit as the client is recieving its own message
 
-        self.logger.debug('{} sent the message: "{}{}'.format(
+        LOGGER.debug('{} sent the message: "{}{}'.format(
             author.name, message.content[:50], ('"' if len(message.content) <= 50 else "..."), 
         ))
 
@@ -94,7 +96,7 @@ class BaseClass:
         elif type(channel) == discord.channel.DMChannel:
             await self.recieved_direct_message(message)
         else:
-            self.logger.warning(f'Channels of type {type(channel)} are not yet supported.')
+            LOGGER.warning(f'Channels of type {type(channel)} are not yet supported.')
 
     @abstractmethod # Needs to be inplemented in next class up
     async def recieved_group_channel(self, message):

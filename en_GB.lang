@@ -7,3 +7,21 @@ discord.command.prefix=!pirate
 
 pirate.help.message=This is a sample help message that will be displayed to the user
 
+pirate.grid.order="rob","kill","present","nuke","swap","choose","shield","mirror","bomb","double","bank","5K","3K","1K","200"
+pirate.grid.format=:black_large_square::regional_indicator_a::regional_indicator_b::regional_indicator_c::regional_indicator_d::regional_indicator_e::regional_indicator_f::regional_indicator_g:\n:one:{}\n:two:{}\n:three:{}\n:four:{}\n:five:{}\n:six:{}\n:seven:{}
+pirate.grid.key.none=:black_large_square:
+pirate.grid.key.rob=:moneybag:
+pirate.grid.key.kill=:dagger:
+pirate.grid.key.present=:gift:
+pirate.grid.key.nuke=:skull_crossbones:
+pirate.grid.key.swap=:arrows_counterclockwise:
+pirate.grid.key.choose=:regional_indicator_c:
+pirate.grid.key.shield=:shield:
+pirate.grid.key.mirror=:mirror:
+pirate.grid.key.bomb=:bomb:
+pirate.grid.key.double=:chart_with_upwards_trend:
+pirate.grid.key.bank=:bank:
+pirate.grid.key.5K=:yen:
+pirate.grid.key.3K=:pound:
+pirate.grid.key.1K=:euro:
+pirate.grid.key.200=:dollar:
