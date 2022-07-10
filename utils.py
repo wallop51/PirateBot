@@ -1,21 +1,42 @@
 from json import dumps, loads
 
-class EnvironmentContainer:
-    def __init__(self, filename='.env', required=()):
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class EnvironmentContainer(metaclass=Singleton):
+    def __init__(self, filename='.env', required=[]):
         try:
+            # open the environment variables file (JSON format)
             with open(filename) as file:
                 variables = loads(file.read())
 
+            required = list(required)
+            # instead of storing as a dictionary, store as attributes so they can be accessed using .s
             for key, value in variables.items():
                 self.__setattr__(key, value)
-        except FileNotFoundError():
+                if key in required:
+                    required.remove(key)
+            for key in required:
+                self.__setattr__(key, input(f'Enter {key}: '))
+
+        except FileNotFoundError:
             for key in required:
                 value = input(f'Enter {key}: ')
                 self.__setattr__(key, value)
         except Exception as e:
             raise e
 
-class LangContatiner:
+class LangContatiner(metaclass=Singleton):
+    # _instance = None
+    # def __new__(cls, *args, **kwargs):
+    #     if not isinstance(cls._instance, cls):
+    #         cls._instance = object.__new__(cls, *args, **kwargs)
+    #     return cls._instance
+
     class SubContainer:
         def __init__(self, data):
             self.data = data

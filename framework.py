@@ -1,9 +1,11 @@
 from abc import abstractmethod
 import logging
-import logging.config
 import discord
 
 from utils import EnvironmentContainer, LangContatiner
+
+global LANG, LOGGER
+LANG, LOGGER = None, None
 
 class MemberManager:
     members = {}
@@ -44,13 +46,9 @@ class EmbedMessage(Message):
 
 
 class BaseClass:
-    def __init__(self, debug=False):
-        logging_config_file = ('logging.conf' if not debug else 'logging_debug.conf')
-        logging.config.fileConfig(
-            fname=logging_config_file,
-            disable_existing_loggers=False,
-        )
-        self.logger = logging.getLogger(__name__)
+    def __init__(self):
+        global LOGGER
+        LOGGER = logging.getLogger(__name__)
 
         self.logger.info('Logger has been initialised.')
 

@@ -1,4 +1,10 @@
 import framework
+global LANG
+LANG = LangContatiner()
+
+global LOGGER
+LOGGER = logging.getLogger(__name__)
+LOGGER.info(f'{__name__} logger has been initialised.')
 
 class Grid:
     def __init__(self, selection, size=7):
