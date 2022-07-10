@@ -1,6 +1,4 @@
 from json import dumps, loads
-from textwrap import indent
-from typing_extensions import Self
 
 class EnvironmentContainer:
     def __init__(self, filename='.env', required=()):
@@ -52,7 +50,7 @@ class LangContatiner:
                 continue
 
             key = line[:line.index('=')]
-            value = line[line.index('=')+1:]
+            value = line[line.index('=')+1:].rstrip()
             parts = key.split('.')
 
             current = self.data

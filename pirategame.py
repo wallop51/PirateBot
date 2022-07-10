@@ -18,14 +18,22 @@ class App(framework.BaseClass):
     def __init__(self, debug=True):
         super().__init__(debug)
     def recieved_group_channel(self, message):
+
+    async def recieved_group_channel(self, message):
         pass
-    def recieved_command(self, message):
+    async def recieved_command(self, message):
         content = message.content
         parts = content.split(' ')
         if parts[1].upper() == 'HELP':
-            print()
-    def recieved_direct_message(self, message):
+            await message.channel.send(self.lang.pirate.help.message)
+        elif parts[1].upper() == 'START':
+            self.start_game()
+
+    async def recieved_direct_message(self, message):
         pass
+
+    def start_game(self):
+        self.current_game = Game(self.voice_channel.members)
 
 a=Grid(0)
 print(a.items)

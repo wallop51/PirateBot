@@ -76,10 +76,9 @@ class BaseClass:
 
         @self.client.event
         async def on_message(message):
-            print(message)
-            self.message_recieved(message)
+            await self.message_recieved(message)
 
-    def message_recieved(self, message):
+    async def message_recieved(self, message):
         author = message.author
 
         if author == self.client.user:
@@ -92,21 +91,21 @@ class BaseClass:
         channel = message.channel
         if type(channel) == discord.channel.TextChannel:
             if message.content.startswith(self.COMMAND_PREFIX):
-                self.recieved_command(message)
-            self.recieved_group_channel(message)
+                await self.recieved_command(message)
+            await self.recieved_group_channel(message)
         elif type(channel) == discord.channel.DMChannel:
-            self.recieved_direct_message(message)
+            await self.recieved_direct_message(message)
         else:
-            print(f'Channels of type {type(channel)} are not yet supported.')
+            self.logger.warning(f'Channels of type {type(channel)} are not yet supported.')
 
     @abstractmethod # Needs to be inplemented in next class up
-    def recieved_group_channel(self, message):
+    async def recieved_group_channel(self, message):
         return
     @abstractmethod # Needs to be inplemented in next class up
-    def recieved_command(self, message):
+    async def recieved_command(self, message):
         return
     @abstractmethod # Needs to be inplemented in next class up
-    def recieved_direct_message(self, message):
+    async def recieved_direct_message(self, message):
         return
         
     
