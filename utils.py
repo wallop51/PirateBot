@@ -65,7 +65,7 @@ class LangContatiner(metaclass=Singleton):
             raise e
 
         # parse the file, creating SubContainer objects to store folders
-        for line in lines:
+        for i, line in enumerate(lines):
             if line.find('#') != -1:
                 line = line[:line.index('#')]
             if line.strip() == '':
@@ -74,21 +74,19 @@ class LangContatiner(metaclass=Singleton):
             key = line[:line.index('=')]
             value = line[line.index('=')+1:].rstrip()
             parts = key.split('.')
-
+            
             current = self.data
-            for i in range(len(parts)):
-                part = parts[i]
-                if i+1 < len(parts): next_part = parts[i+1]
-
+            for j, part in enumerate(parts):
                 try:
                     current = current[part]
                 except:
-                    needs_creating = parts[i:]
+                    needs_creating = parts[j:]
                     needs_creating.reverse()
                     curr = value
                     for p in needs_creating[:-1]:
                         curr = self.SubContainer({p:curr})
                     current.update({needs_creating[-1]: curr})
+                    break
 
     def __getattr__(self, name):
         return self.data[name]

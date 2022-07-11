@@ -85,7 +85,7 @@ class App(framework.BaseClass):
 
     async def recieved_group_channel(self, message):
         pass
-    async def recieved_command(self, message: discord.Message):
+    async def recieved_command(self, message: Message):
         # parse the incoming commands and respond
         content = message.content
         parts = content.split(' ')
@@ -106,12 +106,29 @@ class App(framework.BaseClass):
 
         # pirate start
         elif parts[1].upper() == LANG.discord.command.start.upper():
+            if not message.author.voice:
+                # If the user is not in a VC:
+                a = NotInVC(message.channel)
+                await a.send_message()
+                # raise a
+
             self.voice_channel = message.author.voice.channel
             self.text_channel = message.channel
-            self.start_game()
+
+            # check that there are enough players to start the game
+            debug = True
+            if not (len(self.voice_channel.members) >= 2 or debug == True):
+                a = NotEnoughPlayers(message.channel, len(self.voice_channel.members))
+                await a.send_message()
+                # raise a
+
+            LOGGER.info(LANG.logger.info.game.start.format(author=message.author))
+
+            await self.start_game()
 
     async def recieved_direct_message(self, message):
         pass
 
-    def start_game(self):
+    async def start_game(self):
         self.current_game = Game(self.voice_channel.members)
+        await self.current_game.send_grids()

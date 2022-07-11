@@ -16,6 +16,10 @@ logger.info.game.start={author} started a new game
 logger.command.help={user} asked for help
 logger.command.dev.generate_board={user} requested a random board
 
+ # exceptions
+exception.not_enough_players.message={players} players is not enough to start a game. A minimum number of {minimum} players is required
+exception.not_in_vc.message=Please join a VC in order to start the game
+
  # command syntax
 discord.command.prefix=!pirate
 discord.command.dev.prefix=dev
