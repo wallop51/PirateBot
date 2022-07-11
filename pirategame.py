@@ -1,4 +1,4 @@
-from exceptions import NotEnoughPlayers, NotInVC, NotInVC
+from exceptions import NotEnoughPlayers, NotInVC
 import framework
 from json import loads, dumps
 from random import shuffle
@@ -84,9 +84,10 @@ class Game:
         async def send(self, *args, **kwargs):
             return await self.member.send(*args, **kwargs)
 
-    def __init__(self, players):
+    def __init__(self, players, master):
         # Setup variables
         self.active = True
+        self.master = master
 
         # Create a way to store all of the player data
         self.players = {}
@@ -99,13 +100,15 @@ class Game:
         # distribute random grids
         for id, player in self.players.items():
             player.generate_grid()
-            print(player.grid)
-            embed = Embed( title=LANG.pirate.message.embed.title, description=LANG.pirate.message.embed.description)
-            embed.add_field(name=LANG.pirate.message.embed.your_board, value=str(player.grid), inline=True)
-            embed.add_field(name=LANG.pirate.message.embed.players, value='test\ntest\ntest\ntest', inline=True)
-            embed.add_field(name=LANG.pirate.message.embed.cash, value=str(player.cash_value), inline=False)
-            embed.add_field(name=LANG.pirate.message.embed.bank, value=str(player.bank_value), inline=True)
+            embed = Embed( title=LANG.pirate.message.embed.title,       description=LANG.pirate.message.embed.description)
+            embed.add_field(name=LANG.pirate.message.embed.your_board,  value=str(player.grid), inline=True)
+            embed.add_field(name=LANG.pirate.message.embed.players,     value=self.get_player_list(), inline=True)
+            embed.add_field(name=LANG.pirate.message.embed.cash,        value=str(player.cash_value), inline=False)
+            embed.add_field(name=LANG.pirate.message.embed.bank,        value=str(player.bank_value), inline=True)
             await player.send(embed=embed)
+
+    def get_player_list(self):
+        return '<@'+'>\n<@'.join(map(str, self.player_ids))+'>'
 
 
 class App(framework.BaseClass):
@@ -156,11 +159,12 @@ class App(framework.BaseClass):
 
             LOGGER.info(LANG.logger.info.game.start.format(author=message.author))
 
-            await self.start_game()
+            await self.start_game(message.author)
 
     async def recieved_direct_message(self, message):
         pass
 
-    async def start_game(self):
-        self.current_game = Game(self.voice_channel.members)
+    async def start_game(self, master):
+        self.current_game = Game(self.voice_channel.members, master)
+        await self.text_channel.send(LANG.pirate.message.game_start.format(user_id=self.current_game.master.id))
         await self.current_game.send_grids()

@@ -22,13 +22,15 @@ exception.not_in_vc.message=Please join a VC in order to start the game
 
  # command syntax
 discord.command.prefix=!pirate
-discord.command.dev.prefix=dev
-discord.command.dev.generate_board=generate_board
 discord.command.help=help
 discord.command.start=start
+ # dev commands
+discord.command.dev.prefix=dev
+discord.command.dev.generate_board=generate_board
 
  # message templates that are sent to the user
 pirate.message.help=This is a sample help message that will be displayed to the user
+pirate.message.game_start=<@{user_id}> has just started a new game! Sending all players their grids now!
 pirate.message.embed.title=Pirate Game
 pirate.message.embed.description=
 pirate.message.embed.your_board=Your Board
