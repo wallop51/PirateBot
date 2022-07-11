@@ -74,11 +74,11 @@ class App(framework.BaseClass):
         content = message.content
         parts = content.split(' ')
         if parts[1].upper() == 'HELP':
-            self.logger.info('{} asked for help'.format(message.author.display_name))
+            LOGGER.info('{} asked for help'.format(message.author.display_name))
             await message.channel.send(LANG.pirate.help.message)
         elif parts[1].upper() == 'DEV':
             if parts[2].upper() == 'GENERATE_BOARD':
-                self.logger.info('{} requested a random board'.format(message.author.display_name))
+                LOGGER.info('{} requested a random board'.format(message.author.display_name))
                 new_board = Grid()
                 new_board.randomise()
                 await message.channel.send(str(new_board))
