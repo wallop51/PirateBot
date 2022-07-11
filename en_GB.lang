@@ -29,6 +29,12 @@ discord.command.start=start
 
  # message templates that are sent to the user
 pirate.message.help=This is a sample help message that will be displayed to the user
+pirate.message.embed.title=Pirate Game
+pirate.message.embed.description=
+pirate.message.embed.your_board=Your Board
+pirate.message.embed.players=Players
+pirate.message.embed.cash=Cash
+pirate.message.embed.bank=Bank
 
  # controls for how the grid is displayed
 pirate.grid.order="rob","kill","present","nuke","swap","choose","shield","mirror","bomb","double","bank","5K","3K","1K","200"
