@@ -20,10 +20,13 @@ class EnvironmentContainer(metaclass=Singleton):
                 self.__setattr__(key, value)
                 if key in required:
                     required.remove(key)
+            # arguments passed in as required, if not found in the file, the program will ask for them to be entered manually
+            # so that the rest of the program will not throw errors
             for key in required:
                 self.__setattr__(key, input(f'Enter {key}: '))
 
         except FileNotFoundError:
+            # file not found so get the user to enter all of the required values
             for key in required:
                 value = input(f'Enter {key}: ')
                 self.__setattr__(key, value)
@@ -31,12 +34,6 @@ class EnvironmentContainer(metaclass=Singleton):
             raise e
 
 class LangContatiner(metaclass=Singleton):
-    # _instance = None
-    # def __new__(cls, *args, **kwargs):
-    #     if not isinstance(cls._instance, cls):
-    #         cls._instance = object.__new__(cls, *args, **kwargs)
-    #     return cls._instance
-
     class SubContainer:
         def __init__(self, data):
             self.data = data
@@ -49,21 +46,25 @@ class LangContatiner(metaclass=Singleton):
         def __getitem__(self, name):
             return self.data[name]
 
-    def __init__(self, locale='en_GB.lang'):
+    def __init__(self, locale='en_GB'):
+        # if the locale is not specified, get the locale from the system
         if not locale:
             import locale, ctypes
             locale = locale.windows_locale[ctypes.windll.kernel32.GetUserDefaultUILanguage()] + '.lang'
 
+        # store data in the container and read the locale file
         self.locale = locale
+        self.filename = locale + ".lang"
         self.data = {}
         try:
-            with open(locale) as file:
+            with open(self.filename) as file:
                 lines = file.readlines()
         except FileNotFoundError:
             pass
         except Exception as e:
             raise e
 
+        # parse the file, creating SubContainer objects to store folders
         for line in lines:
             if line.find('#') != -1:
                 line = line[:line.index('#')]
