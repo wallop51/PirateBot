@@ -1,16 +1,24 @@
 import framework
 from json import loads, dumps
 from random import shuffle
-from utils import LangContatiner
+from utils import LangContatiner, EnvironmentContainer
 import discord
 import logging
 
-global LANG
-LANG = LangContatiner()
-
+# setup logger
 global LOGGER
 LOGGER = logging.getLogger(__name__)
-LOGGER.info(f'{__name__} logger has been initialised.')
+
+# setup language container
+global LANG
+LANG = LangContatiner()
+LOGGER.info(LANG.logger.info.logger.init.format(__name__))
+LOGGER.info(LANG.logger.info.lang.init.format(__name__))
+
+# setup environment variables
+global ENV
+ENV = EnvironmentContainer(required=("TOKEN",))
+LOGGER.info(LANG.logger.info.env.init.format(__name__))
 
 class Grid:
     weights = [1,1,1,1,1,1,1,1,1,1,1,1,2,10,25]
@@ -73,16 +81,16 @@ class App(framework.BaseClass):
     async def recieved_command(self, message: discord.Message):
         content = message.content
         parts = content.split(' ')
-        if parts[1].upper() == 'HELP':
-            LOGGER.info('{} asked for help'.format(message.author.display_name))
-            await message.channel.send(LANG.pirate.help.message)
-        elif parts[1].upper() == 'DEV':
-            if parts[2].upper() == 'GENERATE_BOARD':
-                LOGGER.info('{} requested a random board'.format(message.author.display_name))
+        if parts[1].upper() == LANG.discord.command.help.upper():
+            LOGGER.info(LANG.logger.command.help.format(message.author.display_name))
+            await message.channel.send(LANG.pirate.message.help)
+        elif parts[1].upper() == LANG.discord.command.dev.prefix.upper():
+            if parts[2].upper() == LANG.discord.command.dev.generate_board.upper():
+                LOGGER.info(LANG.logging.command.dev.generate_board.format(message.author.display_name))
                 new_board = Grid()
                 new_board.randomise()
                 await message.channel.send(str(new_board))
-        elif parts[1].upper() == 'START':
+        elif parts[1].upper() == LANG.discord.command.start.upper():
             self.voice_channel = message.author.voice.channel
             self.text_channel = message.channel
             self.start_game()

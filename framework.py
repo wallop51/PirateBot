@@ -4,8 +4,22 @@ import discord
 
 from utils import EnvironmentContainer, LangContatiner
 
-global LANG, LOGGER
-LANG, LOGGER = None, None
+
+# setup logger
+global LOGGER
+LOGGER = logging.getLogger(__name__)
+
+# setup language container
+global LANG
+LANG = LangContatiner()
+LOGGER.info(LANG.logger.info.logger.init.format(__name__))
+LOGGER.info(LANG.logger.info.lang.init.format(__name__))
+
+# setup environment variables
+global ENV
+ENV = EnvironmentContainer(required=("TOKEN",))
+LOGGER.info(LANG.logger.info.env.init.format(__name__))
+
 
 class MemberManager:
     members = {}
@@ -47,22 +61,7 @@ class EmbedMessage(Message):
 
 class BaseClass:
     def __init__(self):
-        global LOGGER
-        LOGGER = logging.getLogger(__name__)
-
-        LOGGER.info(f'{__name__} logger has been initialised.')
-
-
-        # read language files
-        global LANG
-        LANG = LangContatiner()
-        self.LANG = LANG
         self.locale = LANG.locale
-        LOGGER.info(LANG.logger.info.lang.init)
-
-        # setup environment variables
-        self.environment = EnvironmentContainer(required=("TOKEN",))
-        LOGGER.info(LANG.logger.info.env.init)
 
         self.COMMAND_PREFIX = LANG.discord.command.prefix
 
@@ -84,8 +83,8 @@ class BaseClass:
         if author == self.client.user:
             return # Exit as the client is recieving its own message
 
-        LOGGER.debug('{} sent the message: "{}{}'.format(
-            author.name, message.content[:50], ('"' if len(message.content) <= 50 else "..."), 
+        LOGGER.debug('{} sent the message: "{}'.format(
+            author.name, message.content[:50]+ ('"' if len(message.content) <= 50 else "..."), 
         ))
 
         channel = message.channel
@@ -111,7 +110,7 @@ class BaseClass:
     
     def start_client(self):
         self.setup()
-        self.client.run(self.environment.TOKEN)
+        self.client.run(ENV.TOKEN)
 
     async def send_direct_message(self, member: MemberManager.Member, message: Message, response_wanted: bool = False):
         try:
