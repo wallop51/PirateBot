@@ -208,6 +208,60 @@ class Game:
         if square in self.player_choice_list:
             self.player_choice_list.remove(square)
 
+    def is_response_valid(self, content: str, prompt: int) -> bool:
+        # check to see if the response is in the correct format
+        if self.response_prompt == 0: # rob
+            return int(content.strip()) in self.player_ids
+        elif self.response_prompt == 1: # kill
+            return int(content.strip()) in self.player_ids
+        elif self.response_prompt == 2: # present
+            return int(content.strip()) in self.player_ids
+        elif self.response_prompt == 3: # nuke
+            # TODO Nuke logic
+            return True
+        elif self.response_prompt == 4: # swap
+            return int(content.strip()) in self.player_ids
+        elif self.response_prompt == 5: # choose
+            return content.strip()[0].isalpha() and content.strip()[1].isdigit() and \
+                'A' <= content.strip()[0].upper() <= 'G' and 1 <= int(content.strip()[1]) <= 7 and \
+                (content.strip[:1].upper() in self.squares)
+        return False
+
+    async def response(self, message: Message):
+        # parse the response
+        player = self.players[message.author.id]
+        # exit if not expecting a response
+        if not player.expect_response: return
+        
+        # check that the response is valid
+        if not self.is_response_valid(message.content, player.response_prompt):
+            # TODO Send a message asking to try again
+            return 
+        
+        # Complete the action
+        # TODO Message the victim and offer use of mirror/shield once all reasy1 has been completed
+        content: str = message.content
+        if self.response_prompt == 0: # rob
+            temp = self.players[int(content.strip())].cash_value
+            self.players[int(content.strip())].cash_value = 0
+            player.cash_value += temp
+        elif self.response_prompt == 1: # kill
+            self.players[int(content.strip())].cash_value = 0
+        elif self.response_prompt == 2: # present
+            self.players[int(content.strip())].cash_value += 1000
+        elif self.response_prompt == 3: # nuke
+            # TODO Nuke logic
+            pass
+        elif self.response_prompt == 4: # swap
+            temp = self.players[int(content.strip())].cash_value
+            self.players[int(content.strip())].cash_value = player.cash_value
+            player.cash_value = temp
+        elif self.response_prompt == 5: # choose
+            if not content.strip()[:1] in self.player_choice_list:
+                self.player_choice_list.append(content.strip()[:1])
+        player.is_ready1 = True
+        return False
+
 
 class App(framework.BaseClass):
     def __init__(self):
@@ -259,8 +313,14 @@ class App(framework.BaseClass):
 
             await self.start_game(message.author)
 
-    async def recieved_direct_message(self, message):
-        pass
+    async def recieved_direct_message(self, message: Message):
+        author = message.author
+        if not author.id in self.current_game.players.keys():
+            # The sender is not currently in a game
+            await author.send(LANG.pirate.message.not_in_game)
+            return
+
+        await self.current_game.response(message)
 
     async def start_game(self, master: Member):
         # starts the game
