@@ -60,6 +60,8 @@ class Game:
                         rows[i] += LANG.pirate.grid.key.__getattr__(lookup[item])
                     except IndexError:
                         rows[i] += LANG.pirate.grid.key.none
+                    except TypeError:
+                        rows[i] += LANG.pirate.grid.key.none
             return eval('"'+LANG.pirate.grid.format.format(*rows)+'"')
 
     class Player:
@@ -67,6 +69,12 @@ class Game:
         def __init__(self, member: Member, pl: list):
             self.member = member
             self.id = member.id
+
+            self.player_list = pl
+            self.expect_response = False
+            self.response_prompt = None
+            self.is_ready1 = True
+            self.is_ready2 = True
 
             self.grid = None
 
@@ -103,6 +111,48 @@ class Game:
             description = self.handle_square(square_type)
             await self.send(embed=self.get_embed(LANG.pirate.message.square_chosen.format(square=square)+'\n'+description))
 
+        def handle_square(self, square_type: int) -> Embed:
+            # Select what happens when a square is chosen
+            # "rob","kill","present","nuke","swap","choose","shield","mirror","bomb","double","bank","5K","3K","1K","200"
+            self.expect_response = False
+            if square_type == 0: # rob
+                self.expect_response = True
+            elif square_type == 1: # kill
+                self.expect_response = True
+            elif square_type == 2: # present
+                self.expect_response = True
+            elif square_type == 3: # nuke
+                self.expect_response = True
+            elif square_type == 4: # swap
+                self.expect_response = True
+            elif square_type == 5: # choose
+                self.expect_response = True
+            elif square_type == 6: # shield
+                self.shield_status = True
+            elif square_type == 7: # mirror
+                self.mirror_status = True
+            elif square_type == 8: # bomb
+                self.cash_value = 0
+            elif square_type == 9: # double
+                self.cash_value *= 2
+            elif square_type == 10: # bank
+                self.bank_value = self.cash_value
+                self.cash_value = 0
+            elif square_type == 11: # 5K
+                self.cash_value += 5000
+            elif square_type == 12: # 3K
+                self.cash_value += 3000
+            elif square_type == 13: # 1K
+                self.cash_value += 1000
+            elif square_type == 14: # 200
+                self.cash_value += 200
+
+            if self.expect_response: self.response_prompt = square_type
+            self.is_ready1 = not self.expect_response
+
+            lookup = loads("["+LANG.pirate.grid.order+"]")
+            description = LANG.pirate.grid.message.__getattr__(lookup[square_type])
+            return description
 
     def __init__(self, players: list, master: Member):
         # Setup variables
