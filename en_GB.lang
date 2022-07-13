@@ -29,6 +29,7 @@ discord.command.dev.prefix=dev
 discord.command.dev.generate_board=generate_board
 
  # message templates that are sent to the user
+pirate.message.not_in_game=You are not currently in a game. Join a VC and type !pirate start to join!
 pirate.message.help=This is a sample help message that will be displayed to the user
 pirate.message.game_start=<@{user_id}> has just started a new game! Sending all players their grids now!
 pirate.message.embed.title=Pirate Game
@@ -37,11 +38,12 @@ pirate.message.embed.your_board=Your Board
 pirate.message.embed.players=Players
 pirate.message.embed.cash=Cash
 pirate.message.embed.bank=Bank
+pirate.message.square_chosen=Square {square} has been chosen!
 
  # controls for how the grid is displayed
 pirate.grid.order="rob","kill","present","nuke","swap","choose","shield","mirror","bomb","double","bank","5K","3K","1K","200"
 pirate.grid.format=:black_large_square::regional_indicator_a::regional_indicator_b::regional_indicator_c::regional_indicator_d::regional_indicator_e::regional_indicator_f::regional_indicator_g:\n:one:{}\n:two:{}\n:three:{}\n:four:{}\n:five:{}\n:six:{}\n:seven:{}
-pirate.grid.key.none=:black_large_square:
+pirate.grid.key.none=:x:
 pirate.grid.key.rob=:moneybag:
 pirate.grid.key.kill=:dagger:
 pirate.grid.key.present=:gift:
@@ -57,3 +59,18 @@ pirate.grid.key.5K=:yen:
 pirate.grid.key.3K=:pound:
 pirate.grid.key.1K=:euro:
 pirate.grid.key.200=:dollar:
+pirate.grid.message.rob=Who do you want to rob?
+pirate.grid.message.kill=Who do you want to kill?
+pirate.grid.message.present=Who do you want to give a present to?
+pirate.grid.message.nuke=
+pirate.grid.message.swap=Who do you want to swap with?
+pirate.grid.message.choose=What square do you want to choose?
+pirate.grid.message.shield=You have just collected your shield
+pirate.grid.message.mirror=You have just collected your mirror
+pirate.grid.message.bomb=You have just landed on a bomb and lost your cash
+pirate.grid.message.double=Your cash has been doubled
+pirate.grid.message.bank=Your cash has been moved into the bank
+pirate.grid.message.5K=You have just collected 5K cash
+pirate.grid.message.3K=You have just collected 3K cash
+pirate.grid.message.1K=You have just collected 1K cash
+pirate.grid.message.200=You have just collected 200 cash
