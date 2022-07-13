@@ -94,8 +94,16 @@ class Game:
         async def send(self, *args, **kwargs):
             # use player.send instead of player.member.send
             return await self.member.send(*args, **kwargs)
+        
+        async def send_square(self, square: str):
+            self.is_ready1, self.is_ready2 = False, False
+            x, y = int(square[1])-1, ord(square[0])-65
+            square_type = self.grid[x,y]
+            self.grid[x,y] = None
+            description = self.handle_square(square_type)
+            await self.send(embed=self.get_embed(LANG.pirate.message.square_chosen.format(square=square)+'\n'+description))
 
-    def __init__(self, players, master):
+
     def __init__(self, players: list, master: Member):
         # Setup variables
         self.active = True
@@ -126,6 +134,29 @@ class Game:
 
     def get_player_list(self):
         return '<@'+'>\n<@'.join(map(str, self.player_ids))+'>'
+
+    async def round(self):
+        # new round
+        # Choose new tile
+        # TODO Reset ready
+        if len(self.player_choice_list) == 0:
+            square = self.random_square()
+        else:
+            square = choice(self.player_choice_list)
+            self.player_choice_list.remove(square)
+        self.choose_square(square)
+
+        # distribute the tile
+        for player in self.players.values():
+            await player.send_square(square)
+
+    def random_square(self) -> str:
+        return choice(self.squares)
+
+    def choose_square(self, square: str):
+        self.squares.remove(square)
+        if square in self.player_choice_list:
+            self.player_choice_list.remove(square)
 
 
 class App(framework.BaseClass):
@@ -181,7 +212,8 @@ class App(framework.BaseClass):
     async def recieved_direct_message(self, message):
         pass
 
-    async def start_game(self, master):
+    async def start_game(self, master: Member):
+        # starts the game
         self.current_game = Game(self.voice_channel.members, master)
         await self.text_channel.send(LANG.pirate.message.game_start.format(user_id=self.current_game.master.id))
         await self.current_game.send_grids()
