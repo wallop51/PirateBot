@@ -3,7 +3,8 @@ import framework
 from json import loads, dumps
 from random import shuffle
 from utils import LangContatiner, EnvironmentContainer
-from discord import Message, Embed
+from discord import Message, Embed, Member
+from random import choice
 import logging
 
 # setup logger
@@ -29,13 +30,13 @@ class Game:
             a.randomise()
             return a
         weights = [1,1,1,1,1,1,1,1,1,1,1,1,2,10,25] # amount of each number
-        def __init__(self, size=7):
+        def __init__(self, size: int=7):
             # stored as a 2 dimensional array of indexes 0-15
             self.items = [[None for i in range(size)] for j in range(size)]
-        def __getitem__(self, coords): # access a particular square using a = Grid[x,y]
+        def __getitem__(self, coords: tuple) -> int: # access a particular square using a = Grid[x,y]
             x, y = coords
             return self.items[x][y]
-        def __setitem__(self, coords, value): # write to a particular square using Grid[x,y] = a
+        def __setitem__(self, coords: tuple, value: int): # write to a particular square using Grid[x,y] = a
             x, y = coords
             self.items[x][y] = value
 
@@ -63,7 +64,7 @@ class Game:
 
     class Player:
         # An object that stores data regarding the players in the game
-        def __init__(self, member):
+        def __init__(self, member: Member, pl: list):
             self.member = member
             self.id = member.id
 
@@ -80,31 +81,47 @@ class Game:
 
         def generate_grid(self):
             self.grid = Game.Grid.random()
+        
+        def get_embed(self, desc: str='') -> Embed:
+            # return the embed that the player will see after the tile has been selected
+            embed = Embed( title=LANG.pirate.message.embed.title,       description=LANG.pirate.message.embed.description+desc)
+            embed.add_field(name=LANG.pirate.message.embed.your_board,  value=str(self.grid), inline=True)
+            embed.add_field(name=LANG.pirate.message.embed.players,     value=self.player_list, inline=True)
+            embed.add_field(name=LANG.pirate.message.embed.cash,        value=str(self.cash_value), inline=False)
+            embed.add_field(name=LANG.pirate.message.embed.bank,        value=str(self.bank_value), inline=True)
+            return embed
 
         async def send(self, *args, **kwargs):
+            # use player.send instead of player.member.send
             return await self.member.send(*args, **kwargs)
 
     def __init__(self, players, master):
+    def __init__(self, players: list, master: Member):
         # Setup variables
         self.active = True
         self.master = master
 
+        self.squares = [chr(65+i)+str(j+1) for i in range(7) for j in range(7)]
+
+        # control logic
+        self.player_choice_list = []
+
         # Create a way to store all of the player data
-        self.players = {}
         self.player_ids = []
         for player in players:
-            self.players.update({player.id: self.Player(player)})
             self.player_ids.append(player.id)
+        self.players = {}
+        pl = self.get_player_list()
+        for player in players:
+            self.players.update({player.id: self.Player(player, pl)})
+
+        return
 
     async def send_grids(self):
         # distribute random grids
         for id, player in self.players.items():
             player.generate_grid()
-            embed = Embed( title=LANG.pirate.message.embed.title,       description=LANG.pirate.message.embed.description)
-            embed.add_field(name=LANG.pirate.message.embed.your_board,  value=str(player.grid), inline=True)
-            embed.add_field(name=LANG.pirate.message.embed.players,     value=self.get_player_list(), inline=True)
-            embed.add_field(name=LANG.pirate.message.embed.cash,        value=str(player.cash_value), inline=False)
-            embed.add_field(name=LANG.pirate.message.embed.bank,        value=str(player.bank_value), inline=True)
+            embed = player.get_embed()
             await player.send(embed=embed)
 
     def get_player_list(self):
@@ -118,7 +135,7 @@ class App(framework.BaseClass):
         self.voice_channel = None
         self.text_channel = None
 
-    async def recieved_group_channel(self, message):
+    async def recieved_group_channel(self, message: Message):
         pass
     async def recieved_command(self, message: Message):
         # parse the incoming commands and respond
@@ -168,3 +185,4 @@ class App(framework.BaseClass):
         self.current_game = Game(self.voice_channel.members, master)
         await self.text_channel.send(LANG.pirate.message.game_start.format(user_id=self.current_game.master.id))
         await self.current_game.send_grids()
+        await self.current_game.round()

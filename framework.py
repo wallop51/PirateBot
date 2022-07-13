@@ -20,45 +20,6 @@ global ENV
 ENV = EnvironmentContainer(required=("TOKEN",))
 LOGGER.info(LANG.logger.info.env.init.format(name=__name__))
 
-
-class MemberManager:
-    members = {}
-
-    @classmethod
-    def add_member(cls, discord_member: discord.Member):
-        temp_member = cls.Member(discord_member)
-        cls.members.update({discord_member.id:temp_member})
-        del temp_member
-    
-    @classmethod
-    def search_members(cls, id: int):
-        try:
-            return cls.members[id]
-        except IndexError:
-            print(f'No member with id of {id} found')
-            return
-
-    class Member:
-        def __init__(self, discord_member: discord.Member):
-            self.discord_member = discord_member
-            self.name = discord_member.display_name
-            self.id = discord_member.id
-
-
-class Message:
-    def __init__(self, content):
-        self.content = content
-        pass
-
-class EmbedMessage(Message):
-    def __init__(self, title, description, color, *fields):
-        embed = discord.Embed(title=title, description=description, color=color)
-        for field_data in fields:
-            print(field_data)
-            embed.add_field(**field_data)
-        self.embed = embed
-
-
 class BaseClass:
     def __init__(self):
         # store the locale and prefix for easier access
