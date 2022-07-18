@@ -180,6 +180,7 @@ class Game:
             self.player_ids.append(player.id)
             self.player_names.append(player.display_name)
             self.player_id_lut.update({player.display_name:player.id})
+        print(self.player_id_lut, self.player_names)
         self.players = {}
         pl = self.get_player_list()
         for player in players:
@@ -396,7 +397,8 @@ class App(framework.BaseClass):
             self.text_channel = message.channel
 
             # check that there are enough players to start the game
-            debug = True
+            debug = False
+            print(self.voice_channel.members)
             if not (len(self.voice_channel.members) >= 2 or debug == True):
                 a = NotEnoughPlayers(message.channel, len(self.voice_channel.members))
                 await a.send_message()
