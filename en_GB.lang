@@ -43,6 +43,17 @@ pirate.message.embed.players=Players
 pirate.message.embed.cash=Cash
 pirate.message.embed.bank=Bank
 pirate.message.square_chosen=Square {square} has been chosen!
+ # messages send after players have responded
+pirate.message.rob.sender=you just robbed {victim} for {amount}
+pirate.message.rob.victim={sender} just robbed you
+pirate.message.kill.sender=you just killed {victim}
+pirate.message.kill.victim={sender} killed you
+pirate.message.present.sender=you just gave {victim} a present
+pirate.message.present.victim={sender} gave you a present
+pirate.message.nuke.sender=you just nuked {victim}
+pirate.message.nuke.victim={sender} just nuked you
+pirate.message.swap.sender=you swaped with {victim}
+pirate.message.swap.victim={sender} swapped with you
 
  # controls for how the grid is displayed
 pirate.grid.order="rob","kill","present","nuke","swap","choose","shield","mirror","bomb","double","bank","5K","3K","1K","200"
