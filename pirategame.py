@@ -92,14 +92,20 @@ class Game:
         def generate_grid(self):
             self.grid = Game.Grid.random()
         
-        def get_embed(self, desc: str='') -> Embed:
+        def get_embed(self, desc: str='', board=True) -> Embed:
             # return the embed that the player will see after the tile has been selected
-            embed = Embed( title=LANG.pirate.message.embed.title,       description=LANG.pirate.message.embed.description+desc)
-            embed.add_field(name=LANG.pirate.message.embed.your_board,  value=str(self.grid), inline=True)
-            embed.add_field(name=LANG.pirate.message.embed.players,     value=self.player_list, inline=True)
-            embed.add_field(name=LANG.pirate.message.embed.cash,        value=str(self.cash_value), inline=False)
-            embed.add_field(name=LANG.pirate.message.embed.bank,        value=str(self.bank_value), inline=True)
-            return embed
+            if board:
+                embed = Embed( title=LANG.pirate.message.embed.title,       description=LANG.pirate.message.embed.description+desc)
+                embed.add_field(name=LANG.pirate.message.embed.your_board,  value=str(self.grid), inline=True)
+                embed.add_field(name=LANG.pirate.message.embed.players,     value=self.player_list, inline=True)
+                embed.add_field(name=LANG.pirate.message.embed.cash,        value=str(self.cash_value), inline=False)
+                embed.add_field(name=LANG.pirate.message.embed.bank,        value=str(self.bank_value), inline=True)
+                return embed
+            else:
+                embed = Embed( title=LANG.pirate.message.embed.title,       description=LANG.pirate.message.embed.description+desc)
+                embed.add_field(name=LANG.pirate.message.embed.cash,        value=str(self.cash_value), inline=False)
+                embed.add_field(name=LANG.pirate.message.embed.bank,        value=str(self.bank_value), inline=True)
+                return embed
 
         async def send(self, *args, **kwargs):
             # use player.send instead of player.member.send
@@ -260,22 +266,69 @@ class Game:
         # TODO store the original values (key=sender as can only attack one person at time) so they can be reversed if shield/mirror used
         # TODO offer use of mirror/shield once all ready1 has been completed. Probably add to player.get_embed(board=False)
         content: str = message.content
-        if self.response_prompt == 0: # rob
-            temp = self.players[int(content.strip())].cash_value
-            self.players[int(content.strip())].cash_value = 0
+        if player.response_prompt == 0: # rob
+            victim_id: int = self.player_id_lut[content.strip()]
+            temp = self.players[victim_id].cash_value
+            self.players[victim_id].cash_value = 0
             player.cash_value += temp
-        elif self.response_prompt == 1: # kill
-            self.players[int(content.strip())].cash_value = 0
-        elif self.response_prompt == 2: # present
-            self.players[int(content.strip())].cash_value += 1000
-        elif self.response_prompt == 3: # nuke
-            # TODO Nuke logic
-            pass
-        elif self.response_prompt == 4: # swap
-            temp = self.players[int(content.strip())].cash_value
-            self.players[int(content.strip())].cash_value = player.cash_value
+            await self.players[victim_id].send(
+                embed=self.players[victim_id].get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).victim.format(sender=player.display_name), board=False
+                ))
+            await player.send(
+                embed=player.get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).sender.format(
+                        victim=self.players[victim_id].display_name,amount=str(temp)), board=False
+                ))
+        elif player.response_prompt == 1: # kill
+            victim_id: int = self.player_id_lut[content.strip()]
+            self.players[victim_id].cash_value = 0
+            await self.players[victim_id].send(
+                embed=self.players[victim_id].get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).victim.format(sender=player.display_name), board=False
+                ))
+            await player.send(
+                embed=player.get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).sender.format(victim=self.players[victim_id].display_name), board=False
+                ))
+        elif player.response_prompt == 2: # present
+            victim_id: int = self.player_id_lut[content.strip()]
+            self.players[victim_id].cash_value += 1000
+            await self.players[victim_id].send(
+                embed=self.players[victim_id].get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).victim.format(sender=player.display_name), board=False
+                ))
+            await player.send(
+                embed=player.get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).sender.format(victim=self.players[victim_id].display_name), board=False
+                ))
+        elif player.response_prompt == 3: # nuke
+            victim_id: int = self.player_id_lut[content.strip()]
+            self.players[victim_id].cash_value = 0
+            # TODO Think of what this is going to do
+            #* Temporarily set to kill another player
+            await self.players[victim_id].send(
+                embed=self.players[victim_id].get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).victim.format(sender=player.display_name), board=False
+                ))
+            await player.send(
+                embed=player.get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).sender.format(victim=self.players[victim_id].display_name), board=False
+                ))
+        elif player.response_prompt == 4: # swap
+            victim_id: int = self.player_id_lut[content.strip()]
+            temp = self.players[victim_id].cash_value
+            self.players[victim_id].cash_value = player.cash_value
             player.cash_value = temp
-        elif self.response_prompt == 5: # choose
+            await self.players[victim_id].send(
+                embed=self.players[victim_id].get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).victim.format(sender=player.display_name), board=False
+                ))
+            await player.send(
+                embed=player.get_embed(
+                    LANG.pirate.message.__getattr__(loads("["+LANG.pirate.grid.order+"]")[player.response_prompt]).sender.format(victim=self.players[victim_id].display_name), board=False
+                ))
+        elif player.response_prompt == 5: # choose
             if not content.strip()[:1] in self.player_choice_list:
                 self.player_choice_list.append(content.strip()[:2])
 
