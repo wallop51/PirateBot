@@ -70,6 +70,8 @@ class Game:
             self.member = member
             self.id = member.id
 
+            self.display_name = member.display_name
+
             self.player_list = pl
             self.expect_response = False
             self.response_prompt = None
@@ -165,9 +167,13 @@ class Game:
         self.player_choice_list = []
 
         # Create a way to store all of the player data
+        self.player_names = []
+        self.player_id_lut = {}
         self.player_ids = []
         for player in players:
             self.player_ids.append(player.id)
+            self.player_names.append(player.display_name)
+            self.player_id_lut.update({player.display_name:player.id})
         self.players = {}
         pl = self.get_player_list()
         for player in players:
@@ -188,7 +194,12 @@ class Game:
     async def round(self):
         # new round
         # Choose new tile
+        LOGGER.info(LANG.logger.info.game.new_round)
+
         # TODO Reset ready
+        if len(self.squares) == 0:
+            await self.end_game()
+            return
         if len(self.player_choice_list) == 0:
             square = self.random_square()
         else:
@@ -204,42 +215,50 @@ class Game:
         return choice(self.squares)
 
     def choose_square(self, square: str):
+        LOGGER.info(LANG.logger.info.game.square_chosen.format(square=square))
         self.squares.remove(square)
         if square in self.player_choice_list:
             self.player_choice_list.remove(square)
 
     def is_response_valid(self, content: str, prompt: int) -> bool:
         # check to see if the response is in the correct format
-        if self.response_prompt == 0: # rob
-            return int(content.strip()) in self.player_ids
-        elif self.response_prompt == 1: # kill
-            return int(content.strip()) in self.player_ids
-        elif self.response_prompt == 2: # present
-            return int(content.strip()) in self.player_ids
-        elif self.response_prompt == 3: # nuke
+
+        if prompt == 0: # rob
+            return content.strip() in self.player_names
+        elif prompt == 1: # kill
+            return content.strip() in self.player_names
+        elif prompt == 2: # present
+            return content.strip() in self.player_names
+        elif prompt == 3: # nuke
+            # TODO Temporarily set to kill logic
+            return content.strip() in self.player_names
             # TODO Nuke logic
-            return True
-        elif self.response_prompt == 4: # swap
-            return int(content.strip()) in self.player_ids
-        elif self.response_prompt == 5: # choose
+        elif prompt == 4: # swap
+            return content.strip() in self.player_names
+        elif prompt == 5: # choose
             return content.strip()[0].isalpha() and content.strip()[1].isdigit() and \
                 'A' <= content.strip()[0].upper() <= 'G' and 1 <= int(content.strip()[1]) <= 7 and \
-                (content.strip[:1].upper() in self.squares)
+                (content.strip()[:2].upper() in self.squares)
         return False
 
     async def response(self, message: Message):
         # parse the response
         player = self.players[message.author.id]
+
+        #TODO run different sub-routine if a response to mirror/shield. set ready 2 then run check run round
         # exit if not expecting a response
         if not player.expect_response: return
         
         # check that the response is valid
         if not self.is_response_valid(message.content, player.response_prompt):
             # TODO Send a message asking to try again
-            return 
+            return
+
+        LOGGER.info(LANG.logger.info.game.response.format(author=message.author.display_name))
         
         # Complete the action
-        # TODO Message the victim and offer use of mirror/shield once all reasy1 has been completed
+        # TODO store the original values (key=sender as can only attack one person at time) so they can be reversed if shield/mirror used
+        # TODO offer use of mirror/shield once all ready1 has been completed. Probably add to player.get_embed(board=False)
         content: str = message.content
         if self.response_prompt == 0: # rob
             temp = self.players[int(content.strip())].cash_value
@@ -258,9 +277,16 @@ class Game:
             player.cash_value = temp
         elif self.response_prompt == 5: # choose
             if not content.strip()[:1] in self.player_choice_list:
-                self.player_choice_list.append(content.strip()[:1])
+                self.player_choice_list.append(content.strip()[:2])
+
+        # action has been completed
         player.is_ready1 = True
         return False
+
+    async def end_game(self):
+        LOGGER.info(LANG.logger.info.game.end)
+        # TODO send a message to everyone
+        return
 
 
 class App(framework.BaseClass):

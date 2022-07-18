@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import logging
 import discord
+from discord import Member, Embed, Message
 
 from utils import EnvironmentContainer, LangContatiner
 
@@ -86,11 +87,11 @@ class BaseClass:
         self.setup()
         self.client.run(ENV.TOKEN)
 
-    async def send_direct_message(self, member: MemberManager.Member, message: Message, response_wanted: bool = False):
+    async def send_direct_message(self, member: Member, message: Message, response_wanted: bool = False):
         try:
             if type(message) == Message:
                 await member.discord_member.send(message.content)
-            elif type(message) == EmbedMessage:
+            elif type(message) == Embed:
                 await member.discord_member.send(embed=message.embed)
         except:
             LOGGER.error(LANG.logger.error.unknown)

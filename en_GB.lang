@@ -11,6 +11,10 @@ logger.error.unsupported_channel=Channels of type {ch_type)} are not yet support
 
  # logger messages regarding the game
 logger.info.game.start={author} started a new game
+logger.info.game.square_chosen=Square {square} has been chosen
+logger.info.game.new_round=Started a new round
+logger.info.game.response={author} has provided a valid response
+logger.info.game.end=The game has ended
 
 # logger messages for commands being run
 logger.command.help={user} asked for help
@@ -62,7 +66,8 @@ pirate.grid.key.200=:dollar:
 pirate.grid.message.rob=Who do you want to rob?
 pirate.grid.message.kill=Who do you want to kill?
 pirate.grid.message.present=Who do you want to give a present to?
-pirate.grid.message.nuke=
+# temporarily set to kill
+pirate.grid.message.nuke=Who do you want to kill?
 pirate.grid.message.swap=Who do you want to swap with?
 pirate.grid.message.choose=What square do you want to choose?
 pirate.grid.message.shield=You have just collected your shield
