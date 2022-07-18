@@ -216,6 +216,18 @@ class Game:
         # distribute the tile
         for player in self.players.values():
             await player.send_square(square)
+        
+        await self.check_run_round()
+    
+    async def check_run_round(self):
+        # TODO is_ready_2 checks
+        # If no-one needs to provide a response, run again
+        ready = True
+        for player in self.players.values():
+            if not player.is_ready1:
+                ready = False
+        if ready:
+            await self.round()
 
     def random_square(self) -> str:
         return choice(self.squares)
@@ -334,6 +346,8 @@ class Game:
 
         # action has been completed
         player.is_ready1 = True
+
+        await self.check_run_round()
         return False
 
     async def end_game(self):
