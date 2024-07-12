@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-To run this project localy you will need 
+To run this project locally you will need 
 * Python (3.9 or higher)
 * python discord module
 
@@ -23,7 +23,7 @@ pip install discord
 
 ### Installing
 
-To download the files required download teh lastest version of the repo or use the following command
+To download the files required download the latest version of the repo or use the following command
 ```
 git clone https://github.com/jdf18/PirateBot.git
 ```
